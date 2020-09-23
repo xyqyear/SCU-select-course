@@ -6,14 +6,13 @@ var playSound = (function beep() {
     }
 })();
 
-function refresh_and_find() {
-    var iframe_document = document.getElementById('ifra').contentWindow.document;
-    // if the content is not ready, wait for another 0.5 second
-    if (iframe_document.getElementById('queryButton').textContent.search('正在') !== -1) {
-        setTimeout(refresh_and_find, 500);
-        return;
-    }
+var iframe_document = document.getElementById('ifra').contentWindow.document;
 
+function changeBackgroud(color) {
+    iframe_document.body.style.background = color;
+}
+
+function fillAndSearch() {
     // change the search content if needed
     var searchtj = iframe_document.getElementById('searchtj');
     if (searchtj.value !== '中华文化') {
@@ -22,13 +21,21 @@ function refresh_and_find() {
 
     // query result
     iframe_document.getElementById('queryButton').click();
+}
 
-    // wait for 2.5 seconds
+function find() {
+    // if the content is not ready, wait for another 0.5 second
+    if (iframe_document.getElementById('queryButton').textContent.search('正在') !== -1) {
+        setTimeout(find, 500);
+        return;
+    }
+
+    // wait for 1 second
     setTimeout(() => {
         var courseTable = iframe_document.getElementById('courseList_table');
         var foundFlag = false;
         // iterate through the rows of the table to find if there is "China's Culture (History)"
-        courseTable.tBodies[0].rows.forEach(function (row) {
+        Array.from(courseTable.tBodies[0].rows).forEach((row) => {
             // if there is one being found, then skip all the rest ones
             if (foundFlag) {
                 return;
@@ -39,7 +46,7 @@ function refresh_and_find() {
                 var checkbox = row.cells[0].children[0];
                 if (!checkbox.disabled) {
                     foundFlag = true;
-                    checkbox.checked = true;
+                    checkbox.click()
                 }
             }
         })
@@ -48,15 +55,18 @@ function refresh_and_find() {
         if (foundFlag) {
             console.log('FOUND!!!');
             playSound();
+            changeBackgroud('red');
             setTimeout(() => {
                 document.getElementById('submitButton').click();
             }, 1000);
         // if it's not found, then log "not found" and start over
         } else {
             console.log('not found');
-            refresh_and_find();
+            fillAndSearch();
+            setTimeout(find, 500);
         }
-    }, 2000);
+    }, 1000);
 }
 
-refresh_and_find();
+fillAndSearch();
+setTimeout(find, 500);
