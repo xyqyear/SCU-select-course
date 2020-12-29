@@ -1,10 +1,10 @@
 // config
 var searchCourseName = '中华文化';
-var wantCourseID = ['999008030_01']
-var timeBeforeCheckAfterSearchFound = 1000
-var timeBeforeSubmitAfterFound = 500
-var delayBeforeRetry = 500
-var checkSearchStatusInterval = 500
+var wantCourseID = ['999008030_01'];
+var timeBeforeCheckAfterSearchFound = 1000;
+var timeBeforeSubmitAfterFound = 500;
+var delayBeforeRetry = 500;
+var checkSearchStatusInterval = 500;
 
 
 // a beep sound maker copied from stackoverflow
@@ -23,8 +23,8 @@ function changeBackgroud(color) {
 
 function hasSubString(courseName, array) {
     return array.some((element) => {
-        return courseName.search(element) !== -1
-    })
+        return courseName.search(element) !== -1;
+    });
 }
 
 function fillAndSearch() {
@@ -48,20 +48,24 @@ function find() {
     // wait for 1 second
     setTimeout(() => {
         var courseTable = iframe_document.getElementById('courseList_table');
-        // iterate through the rows of the table to see if there is wantCourseID
-        var foundFlag = Array.from(courseTable.tBodies[0].rows).some((row) => {
-            // if there is one being found, then skip all the rest ones
-            var courseName = row.cells[2].innerText;
-            console.log(courseName);
-            if (hasSubString(courseName, wantCourseID)) {
-                var checkbox = row.cells[0].children[0];
-                if (!checkbox.disabled) {
-                    checkbox.click();
-                    return true;
+
+        var foundFlag = false;
+        if (courseTable.tBodies[0].rows[0].textContent !== '未查询到记录！') {
+            // iterate through the rows of the table to see if there is wantCourseID
+            foundFlag = Array.from(courseTable.tBodies[0].rows).some((row) => {
+                // if there is one being found, then skip all the rest ones
+                var courseName = row.cells[2].innerText;
+                console.log(courseName);
+                if (hasSubString(courseName, wantCourseID)) {
+                    var checkbox = row.cells[0].children[0];
+                    if (!checkbox.disabled) {
+                        checkbox.click();
+                        return true;
+                    }
                 }
-            }
-            return false;
-        });
+                return false;
+            });
+        }
 
         // if it's found, then make beep sound and wait for 1 second before trying to submit
         if (foundFlag) {
@@ -71,7 +75,7 @@ function find() {
             setTimeout(() => {
                 document.getElementById('submitButton').click();
             }, timeBeforeSubmitAfterFound);
-        // if it's not found, then log "not found" and start over
+            // if it's not found, then log "not found" and start over
         } else {
             console.log('not found');
             fillAndSearch();
