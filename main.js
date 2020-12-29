@@ -17,10 +17,6 @@ var playSound = (function beep() {
 
 var iframe_document = document.getElementById('ifra').contentWindow.document;
 
-function changeBackgroud(color) {
-    iframe_document.body.style.background = color;
-}
-
 function hasSubString(courseName, array) {
     return array.some((element) => {
         return courseName.search(element) !== -1;
@@ -71,7 +67,6 @@ function find() {
         if (foundFlag) {
             console.log('FOUND!!!');
             playSound();
-            changeBackgroud('red');
             setTimeout(() => {
                 document.getElementById('submitButton').click();
             }, timeBeforeSubmitAfterFound);
